@@ -1,0 +1,19 @@
+{
+  "name": "Java 开发环境",
+  "category": "Java",
+  "isBuiltIn": true,
+  "variables": [
+    {
+      "key": "JAVA_HOME",
+      "value": "/usr/lib/jvm/java-17",
+      "source": "shellConfig",
+      "description": "Java 安装目录"
+    },
+    {
+      "key": "PATH",
+      "value": "$JAVA_HOME/bin:$PATH",
+      "source": "shellConfig",
+      "description": "添加 Java 到 PATH"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Node.js 开发环境",
+  "category": "Node.js",
+  "isBuiltIn": true,
+  "variables": [
+    {
+      "key": "NODE_HOME",
+      "value": "/usr/local/node",
+      "source": "shellConfig",
+      "description": "Node.js 安装目录"
+    },
+    {
+      "key": "PATH",
+      "value": "$NODE_HOME/bin:$PATH",
+      "source": "shellConfig",
+      "description": "添加 Node.js 到 PATH"
+    }
+  ]
+}

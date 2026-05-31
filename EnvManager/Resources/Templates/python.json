@@ -1,0 +1,19 @@
+{
+  "name": "Python 开发环境",
+  "category": "Python",
+  "isBuiltIn": true,
+  "variables": [
+    {
+      "key": "PYTHONPATH",
+      "value": "/usr/local/lib/python3.9",
+      "source": "shellConfig",
+      "description": "Python 库路径"
+    },
+    {
+      "key": "PYTHONHOME",
+      "value": "/usr/local",
+      "source": "shellConfig",
+      "description": "Python 安装目录"
+    }
+  ]
+}

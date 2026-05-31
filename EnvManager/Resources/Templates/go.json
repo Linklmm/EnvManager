@@ -1,0 +1,25 @@
+{
+  "name": "Go 开发环境",
+  "category": "Go",
+  "isBuiltIn": true,
+  "variables": [
+    {
+      "key": "GOROOT",
+      "value": "/usr/local/go",
+      "source": "shellConfig",
+      "description": "Go 安装目录"
+    },
+    {
+      "key": "GOPATH",
+      "value": "~/go",
+      "source": "shellConfig",
+      "description": "Go 工作空间"
+    },
+    {
+      "key": "PATH",
+      "value": "$GOROOT/bin:$GOPATH/bin:$PATH",
+      "source": "shellConfig",
+      "description": "添加 Go 到 PATH"
+    }
+  ]
+}

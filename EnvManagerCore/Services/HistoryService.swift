@@ -2,14 +2,14 @@ import Foundation
 import SQLite3
 
 /// 历史记录错误
-enum HistoryError: Error, LocalizedError {
+public enum HistoryError: Error, LocalizedError {
     case openDatabaseFailed
     case createTableFailed
     case insertFailed
     case queryFailed
     case clearFailed
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .openDatabaseFailed: return "打开数据库失败"
         case .createTableFailed: return "创建表失败"
@@ -21,17 +21,16 @@ enum HistoryError: Error, LocalizedError {
 }
 
 /// 历史记录服务 - 使用 SQLite 存储操作历史
-actor HistoryService {
+public actor HistoryService {
     private let dbURL: URL
     private var db: OpaquePointer?
 
-    /// 初始化 - 直接在 init 中执行所有初始化逻辑
-    nonisolated init(dbURL: URL = Constants.historyDatabaseURL) {
+    /// 初始化
+    public init(dbURL: URL = Constants.historyDatabaseURL) {
         self.dbURL = dbURL
         self.db = nil
 
-        // 直接在 init 中创建目录和数据库（使用 nonisolated）
-        // 创建目录
+        // 创建目录（直接执行）
         let directory = dbURL.deletingLastPathComponent()
         if !FileManager.default.fileExists(atPath: directory.path) {
             do {
@@ -74,7 +73,7 @@ actor HistoryService {
     }
 
     /// 添加记录
-    func addRecord(_ record: HistoryRecord) throws {
+    public func addRecord(_ record: HistoryRecord) throws {
         // 确保数据库已初始化
         try initializeDatabase()
 
@@ -105,7 +104,7 @@ actor HistoryService {
     }
 
     /// 获取所有记录
-    func getRecords() throws -> [HistoryRecord] {
+    public func getRecords() throws -> [HistoryRecord] {
         try initializeDatabase()
         let selectSQL = "SELECT id, action, variableKey, oldValue, newValue, timestamp FROM history ORDER BY timestamp DESC;"
 
@@ -142,7 +141,7 @@ actor HistoryService {
     }
 
     /// 获取最近的记录
-    func getRecentRecords(limit: Int = 10) throws -> [HistoryRecord] {
+    public func getRecentRecords(limit: Int = 10) throws -> [HistoryRecord] {
         try initializeDatabase()
         let selectSQL = "SELECT id, action, variableKey, oldValue, newValue, timestamp FROM history ORDER BY timestamp DESC LIMIT \(limit);"
 
@@ -179,7 +178,7 @@ actor HistoryService {
     }
 
     /// 清除历史
-    func clearHistory() throws {
+    public func clearHistory() throws {
         try initializeDatabase()
         let deleteSQL = "DELETE FROM history;"
 

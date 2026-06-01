@@ -4,11 +4,14 @@ import os.log
 private let log = OSLog(subsystem: "com.envmanager", category: "ShellService")
 
 /// Shell 配置文件服务 - 按 shellType 分流写入不同配置文件
-actor ShellService {
+public actor ShellService {
+
+    /// 初始化
+    public init() {}
 
     /// 写入环境变量到 Shell 配置文件
     /// 按 shellType 分流写入不同的配置文件（zsh → ~/.zshrc, bash → ~/.bashrc）
-    func writeEnvVariables(_ group: EnvGroup) throws {
+    public func writeEnvVariables(_ group: EnvGroup) throws {
         os_log("🔄 writeEnvVariables 开始", log: log, type: .info)
         os_log("  - 分组名: %{public}s", log: log, type: .info, group.name)
         os_log("  - 变量数: %{public}d", log: log, type: .info, group.variables.count)
@@ -94,7 +97,7 @@ actor ShellService {
     }
 
     /// 移除指定分组的环境变量（从所有配置文件中移除）
-    func removeEnvVariables(groupName: String) throws {
+    public func removeEnvVariables(groupName: String) throws {
         // 从 zshrc 移除
         if FileManager.default.fileExists(atPath: Constants.zshrcPath) {
             let content = try readFileContent(at: Constants.zshrcPath)
@@ -111,7 +114,7 @@ actor ShellService {
     }
 
     /// 读取指定分组的环境变量
-    func readEnvVariables(groupName: String) throws -> EnvGroup? {
+    public func readEnvVariables(groupName: String) throws -> EnvGroup? {
         // 优先从 zshrc 读取
         if FileManager.default.fileExists(atPath: Constants.zshrcPath) {
             let content = try readFileContent(at: Constants.zshrcPath)
@@ -205,7 +208,7 @@ actor ShellService {
     }
 
     /// 获取所有 Shell 配置文件路径
-    func getAllShellConfigPaths() -> [String] {
+    public func getAllShellConfigPaths() -> [String] {
         [Constants.zshrcPath, Constants.bashrcPath, Constants.bashProfilePath]
     }
 }

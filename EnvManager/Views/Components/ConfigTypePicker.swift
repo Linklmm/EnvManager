@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 
 /// 配置大类枚举
 enum ConfigCategory: String, CaseIterable {

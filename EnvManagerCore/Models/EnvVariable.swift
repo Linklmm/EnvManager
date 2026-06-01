@@ -1,17 +1,17 @@
 import Foundation
 
 /// 环境变量模型
-struct EnvVariable: Identifiable, Codable, Hashable {
-    let id: UUID
-    var key: String?
-    var value: String
-    var configType: ConfigType
-    var shellType: ShellType?
-    var isSensitive: Bool
-    var encryptedValue: String?
-    var description: String?
-    var aliasCommand: String?
-    let createdAt: Date
+public struct EnvVariable: Identifiable, Codable, Hashable {
+    public let id: UUID
+    public var key: String?
+    public var value: String
+    public var configType: ConfigType
+    public var shellType: ShellType?
+    public var isSensitive: Bool
+    public var encryptedValue: String?
+    public var description: String?
+    public var aliasCommand: String?
+    public let createdAt: Date
 
     // 新编码键
     enum CodingKeys: String, CodingKey {
@@ -25,7 +25,7 @@ struct EnvVariable: Identifiable, Codable, Hashable {
     }
 
     // 自定义解码，处理新旧两种数据格式
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         key = try container.decodeIfPresent(String.self, forKey: .key)
@@ -54,7 +54,7 @@ struct EnvVariable: Identifiable, Codable, Hashable {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encodeIfPresent(key, forKey: .key)
@@ -69,7 +69,7 @@ struct EnvVariable: Identifiable, Codable, Hashable {
     }
 
     /// 创建新的环境变量
-    init(
+    public init(
         id: UUID = UUID(),
         key: String? = nil,
         value: String,
@@ -94,7 +94,7 @@ struct EnvVariable: Identifiable, Codable, Hashable {
     }
 
     /// 生成配置语句
-    func generateConfigStatement() -> String {
+    public func generateConfigStatement() -> String {
         switch configType {
         case .envVariable:
             return "export \(key ?? "")=\"\(value)\""
@@ -103,17 +103,16 @@ struct EnvVariable: Identifiable, Codable, Hashable {
         case .path:
             return "export PATH=\(value):$PATH"
         case .alias:
-            if let aliasCommand = aliasCommand, !aliasCommand.isEmpty {
-                return aliasCommand
-            }
-            return "alias \(key ?? "")='\(value)'"
+            // value = 别名（如 "ll"），aliasCommand = 命令（如 "ls -la"）
+            // 生成格式: alias ll='ls -la'
+            return "alias \(value)='\(aliasCommand ?? value)'"
         case .launchctl:
             return "launchctl setenv \(key ?? "") \(value)"
         }
     }
 
     /// 显示标题（用于列表展示）
-    var displayTitle: String {
+    public var displayTitle: String {
         switch configType {
         case .envVariable, .shellConfig:
             return key ?? "(无键)"
@@ -127,7 +126,7 @@ struct EnvVariable: Identifiable, Codable, Hashable {
     }
 
     /// 显示副标题（用于列表展示）
-    var displaySubtitle: String {
+    public var displaySubtitle: String {
         let typeLabel = configType.displayName
         let shellLabel: String
         if let shellType = shellType {
@@ -139,7 +138,7 @@ struct EnvVariable: Identifiable, Codable, Hashable {
     }
 
     /// 获取显示值（敏感信息显示为星号）
-    var displayValue: String {
+    public var displayValue: String {
         if isSensitive {
             return "********"
         }
@@ -147,16 +146,16 @@ struct EnvVariable: Identifiable, Codable, Hashable {
     }
 
     /// 获取显示图标
-    var displayIcon: String {
+    public var displayIcon: String {
         return configType.icon
     }
 
     /// 用于哈希和相等比较的关键字段
-    static func == (lhs: EnvVariable, rhs: EnvVariable) -> Bool {
+    public static func == (lhs: EnvVariable, rhs: EnvVariable) -> Bool {
         lhs.id == rhs.id
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }

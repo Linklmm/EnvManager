@@ -25,6 +25,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 创建菜单栏控制器（使用共享的 EnvService）
         menuBarController = MenuBarController(envService: envService)
 
+        // 检查并提示安装 CLI
+        if !CLIInstaller.isInstalled() {
+            if let installCommand = CLIInstaller.getManualInstallCommand() {
+                print("📋 CLI 未安装，请运行以下命令安装：")
+                print(installCommand)
+
+                // 显示提示对话框
+                let alert = NSAlert()
+                alert.messageText = "安装命令行工具"
+                alert.informativeText = "CLI 工具 'envm' 未安装。请在终端运行以下命令安装：\n\n\(installCommand)"
+                alert.addButton(withTitle: "复制命令")
+                alert.addButton(withTitle: "稍后")
+                alert.alertStyle = .informational
+
+                if alert.runModal() == .alertFirstButtonReturn {
+                    // 复制到剪贴板
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(installCommand, forType: .string)
+                }
+            }
+        }
+
         // 设置应用为代理应用（不显示在 Dock）
         // NSApplication.shared.setActivationPolicy(.accessory)
     }

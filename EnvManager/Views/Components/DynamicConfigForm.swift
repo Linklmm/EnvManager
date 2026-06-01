@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 
 /// 动态配置表单组件 - 根据配置类型显示不同字段
 struct DynamicConfigForm: View {
@@ -22,6 +23,8 @@ struct DynamicConfigForm: View {
             return !value.isEmpty && valueError == nil
         case .alias:
             return !value.isEmpty && !aliasCommand.isEmpty && valueError == nil && aliasCommandError == nil
+        @unknown default:
+            return false
         }
     }
 
@@ -42,6 +45,9 @@ struct DynamicConfigForm: View {
             case .alias:
                 FormField(label: "别名", placeholder: "例如: ll", binding: $value, error: valueError, onChange: validateAliasName)
                 FormField(label: "命令", placeholder: "例如: ls -la", binding: $aliasCommand, error: aliasCommandError, onChange: validateAliasCommand)
+
+            @unknown default:
+                EmptyView()
             }
 
             // Shell 选择器（仅 Shell 配置类显示）

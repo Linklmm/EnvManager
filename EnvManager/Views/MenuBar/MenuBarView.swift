@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 
 /// 菜单栏弹出视图
 struct MenuBarView: View {

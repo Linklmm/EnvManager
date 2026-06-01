@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 
 /// Shell 类型选择器组件
 struct ShellTypePicker: View {

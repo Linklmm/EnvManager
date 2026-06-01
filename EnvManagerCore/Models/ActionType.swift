@@ -1,7 +1,7 @@
 import Foundation
 
 /// 操作历史记录的动作类型
-enum ActionType: String, Codable, CaseIterable {
+public enum ActionType: String, Codable, CaseIterable {
     /// 创建新变量
     case create
     /// 更新现有变量
@@ -12,7 +12,7 @@ enum ActionType: String, Codable, CaseIterable {
     case switchGroup = "switch"
 
     /// 获取动作的显示名称
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .create:
             return "创建"

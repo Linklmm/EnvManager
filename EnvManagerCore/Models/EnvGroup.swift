@@ -1,15 +1,15 @@
 import Foundation
 
 /// 环境变量分组模型
-struct EnvGroup: Identifiable, Codable, Hashable {
-    let id: UUID
-    var name: String
-    var icon: String?
-    var color: String
-    var variables: [EnvVariable]
-    var isActive: Bool
-    let createdAt: Date
-    var updatedAt: Date
+public struct EnvGroup: Identifiable, Codable, Hashable {
+    public let id: UUID
+    public var name: String
+    public var icon: String?
+    public var color: String
+    public var variables: [EnvVariable]
+    public var isActive: Bool
+    public let createdAt: Date
+    public var updatedAt: Date
 
     // 自定义解码键，处理旧版本数据
     enum CodingKeys: String, CodingKey {
@@ -17,7 +17,7 @@ struct EnvGroup: Identifiable, Codable, Hashable {
     }
 
     // 自定义解码，为缺失字段提供默认值
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
@@ -30,7 +30,7 @@ struct EnvGroup: Identifiable, Codable, Hashable {
     }
 
     // 标准编码
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
@@ -43,7 +43,7 @@ struct EnvGroup: Identifiable, Codable, Hashable {
     }
 
     /// 创建新的环境变量分组
-    init(
+    public init(
         id: UUID = UUID(),
         name: String,
         icon: String? = nil,
@@ -64,24 +64,24 @@ struct EnvGroup: Identifiable, Codable, Hashable {
     }
 
     /// 获取变量数量
-    var variableCount: Int {
+    public var variableCount: Int {
         variables.count
     }
 
     /// 添加变量
-    mutating func addVariable(_ variable: EnvVariable) {
+    public mutating func addVariable(_ variable: EnvVariable) {
         variables.append(variable)
         updateTimestamp()
     }
 
     /// 移除变量
-    mutating func removeVariable(id: UUID) {
+    public mutating func removeVariable(id: UUID) {
         variables.removeAll { $0.id == id }
         updateTimestamp()
     }
 
     /// 更新变量
-    mutating func updateVariable(id: UUID, with newVariable: EnvVariable) {
+    public mutating func updateVariable(id: UUID, with newVariable: EnvVariable) {
         if let index = variables.firstIndex(where: { $0.id == id }) {
             variables[index] = newVariable
             updateTimestamp()
@@ -89,26 +89,26 @@ struct EnvGroup: Identifiable, Codable, Hashable {
     }
 
     /// 更新时间戳
-    mutating func updateTimestamp() {
+    public mutating func updateTimestamp() {
         updatedAt = Date()
     }
 
     /// 查找变量
-    func findVariable(id: UUID) -> EnvVariable? {
+    public func findVariable(id: UUID) -> EnvVariable? {
         variables.first { $0.id == id }
     }
 
     /// 查找变量 by key
-    func findVariable(key: String) -> EnvVariable? {
+    public func findVariable(key: String) -> EnvVariable? {
         variables.first { $0.key == key }
     }
 
     /// 用于哈希和相等比较
-    static func == (lhs: EnvGroup, rhs: EnvGroup) -> Bool {
+    public static func == (lhs: EnvGroup, rhs: EnvGroup) -> Bool {
         lhs.id == rhs.id
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }

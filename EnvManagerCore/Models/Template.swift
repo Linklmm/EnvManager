@@ -1,15 +1,15 @@
 import Foundation
 
 /// 环境变量模板
-struct Template: Identifiable, Codable, Hashable {
-    let id: UUID
-    var name: String
-    var category: String
-    var variables: [EnvVariable]
-    var isBuiltIn: Bool
+public struct Template: Identifiable, Codable, Hashable {
+    public let id: UUID
+    public var name: String
+    public var category: String
+    public var variables: [EnvVariable]
+    public var isBuiltIn: Bool
 
     /// 创建新模板
-    init(
+    public init(
         id: UUID = UUID(),
         name: String,
         category: String,
@@ -24,7 +24,7 @@ struct Template: Identifiable, Codable, Hashable {
     }
 
     /// 将模板应用到新分组
-    func applyToGroup(
+    public func applyToGroup(
         name: String,
         icon: String? = nil,
         color: String = "#667eea"
@@ -52,7 +52,7 @@ struct Template: Identifiable, Codable, Hashable {
     }
 
     /// 获取分类图标
-    var categoryIcon: String {
+    public var categoryIcon: String {
         switch category.lowercased() {
         case "python":
             return "🐍"
@@ -74,11 +74,11 @@ struct Template: Identifiable, Codable, Hashable {
     }
 
     /// 用于哈希和相等比较
-    static func == (lhs: Template, rhs: Template) -> Bool {
+    public static func == (lhs: Template, rhs: Template) -> Bool {
         lhs.id == rhs.id
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }

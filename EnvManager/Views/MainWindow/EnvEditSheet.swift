@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 
 /// 环境变量编辑弹窗
 struct EnvEditSheet: View {

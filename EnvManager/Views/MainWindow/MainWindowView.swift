@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 import UniformTypeIdentifiers
 
 /// 主窗口视图 - 使用视图切换而非弹窗
@@ -6,6 +7,7 @@ struct MainWindowView: View {
     @StateObject private var viewModel: MainViewModel
     @State private var selectedGroup: EnvGroup?
     @State private var showDetailView = false
+    @State private var selectedTab = 0
 
     /// 接收 EnvService 参数初始化
     init(envService: EnvService) {
@@ -13,35 +15,49 @@ struct MainWindowView: View {
     }
 
     var body: some View {
-        ZStack {
-            if showDetailView && selectedGroup != nil {
-                // 详情页视图（页面切换，不是弹窗）
-                GroupDetailView(
-                    group: selectedGroup!,
-                    viewModel: viewModel,
-                    onBack: {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            showDetailView = false
-                            selectedGroup = nil
+        TabView(selection: $selectedTab) {
+            // 分组管理标签页
+            ZStack {
+                if showDetailView && selectedGroup != nil {
+                    // 详情页视图（页面切换，不是弹窗）
+                    GroupDetailView(
+                        group: selectedGroup!,
+                        viewModel: viewModel,
+                        onBack: {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                showDetailView = false
+                                selectedGroup = nil
+                            }
                         }
-                    }
-                )
-                .transition(.move(edge: .trailing).combined(with: .opacity))
-                .zIndex(1)
-            } else {
-                // 主列表视图
-                GroupListView(
-                    viewModel: viewModel,
-                    onEditGroup: { group in
-                        selectedGroup = group
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            showDetailView = true
+                    )
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .zIndex(1)
+                } else {
+                    // 主列表视图
+                    GroupListView(
+                        viewModel: viewModel,
+                        onEditGroup: { group in
+                            selectedGroup = group
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                showDetailView = true
+                            }
                         }
-                    }
-                )
-                .transition(.opacity)
-                .zIndex(0)
+                    )
+                    .transition(.opacity)
+                    .zIndex(0)
+                }
             }
+            .tabItem {
+                Label("分组管理", systemImage: "folder.fill")
+            }
+            .tag(0)
+
+            // Shell 配置标签页
+            ShellConfigView()
+                .tabItem {
+                    Label("Shell 配置", systemImage: "terminal.fill")
+                }
+                .tag(1)
         }
     }
 }
@@ -194,6 +210,7 @@ struct GroupDetailView: View {
     @State private var showAddForm = false
     @State private var editingVariable: EnvVariable?
     @State private var showIconPicker = false
+    @State private var previewExpanded = false
 
     // 用于刷新 group 数据（因为 group 是 let，需要从 viewModel 获取最新数据）
     var currentGroup: EnvGroup {
@@ -213,7 +230,7 @@ struct GroupDetailView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 标题栏 + 返回按钮
+            // 标题栏 + 返回按钮（不变）
             HStack {
                 Button(action: onBack) {
                     HStack(spacing: 4) {
@@ -260,7 +277,7 @@ struct GroupDetailView: View {
 
             Divider()
 
-            // 激活状态
+            // 激活状态（不变）
             if currentGroup.isActive {
                 HStack(spacing: 8) {
                     Circle()
@@ -276,27 +293,26 @@ struct GroupDetailView: View {
                 .background(Color.green.opacity(0.1))
             }
 
-            // 搜索栏
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-                TextField("搜索变量", text: $searchText)
-                if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(8)
-            .background(Color(nsColor: .controlBackgroundColor))
-            .cornerRadius(6)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            // 变量列表 - 使用 Form 风格与分组列表统一
+            // 滚动容器 - 使用分组样式（macOS 使用 Form）
             Form {
+                // 搜索栏
+                Section {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        TextField("搜索变量", text: $searchText)
+                        if !searchText.isEmpty {
+                            Button(action: { searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(6)
+                }
+
+                // 配置项列表
                 Section {
                     ForEach(filteredVariables) { variable in
                         VariableListRow(
@@ -315,6 +331,7 @@ struct GroupDetailView: View {
                 } header: {
                     HStack {
                         Text("配置项")
+                            .font(.system(size: 13, weight: .semibold))
                         Spacer()
                         Button(action: {
                             showAddForm = true
@@ -329,10 +346,33 @@ struct GroupDetailView: View {
                         .buttonStyle(.borderedProminent)
                     }
                 }
+
+                // 预览变更 - 整行可点击展开
+                Section {
+                    if previewExpanded {
+                        PreviewContentShellView(group: currentGroup)
+                    }
+                } header: {
+                    HStack {
+                        Text("预览变更")
+                            .font(.system(size: 13, weight: .semibold))
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .rotationEffect(previewExpanded ? .degrees(90) : .zero)
+                            .foregroundColor(.secondary)
+                            .font(.system(size: 12))
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            previewExpanded.toggle()
+                        }
+                    }
+                }
             }
             .formStyle(.grouped)
 
-            // 底部操作栏
+            // 底部按钮栏（移到 ScrollView 外）
             HStack(spacing: 12) {
                 if currentGroup.isActive {
                     Button(action: {
@@ -360,7 +400,7 @@ struct GroupDetailView: View {
             }
             .padding()
         }
-        .frame(minWidth: 500, minHeight: 400)
+        .frame(minWidth: 500, minHeight: 550)
         .sheet(isPresented: $showAddForm) {
             AddVariableSheet(
                 groupId: group.id,
@@ -420,6 +460,8 @@ struct AddVariableSheet: View {
             return !value.isEmpty
         case .alias:
             return !value.isEmpty && !aliasCommand.isEmpty
+        @unknown default:
+            return false
         }
     }
 
@@ -512,6 +554,8 @@ struct EditVariableSheet: View {
             return !value.isEmpty
         case .alias:
             return !value.isEmpty && !aliasCommand.isEmpty
+        @unknown default:
+            return false
         }
     }
 

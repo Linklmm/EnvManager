@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 import os.log
 
 private let log = OSLog(subsystem: "com.envmanager", category: "GroupRowView")

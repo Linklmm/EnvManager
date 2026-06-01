@@ -1,13 +1,13 @@
 import Foundation
 
 /// Shell 类型枚举
-enum ShellType: String, Codable, CaseIterable {
+public enum ShellType: String, Codable, CaseIterable {
     case zsh
     case bash
     case both  // 通用，两者都写
 
     /// 显示名称
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .zsh: return "zsh"
         case .bash: return "bash"
@@ -16,7 +16,7 @@ enum ShellType: String, Codable, CaseIterable {
     }
 
     /// 配置文件路径（展开 ~ 为实际路径）
-    var configFilePaths: [String] {
+    public var configFilePaths: [String] {
         let home = NSHomeDirectory()
         switch self {
         case .zsh:
@@ -29,12 +29,12 @@ enum ShellType: String, Codable, CaseIterable {
     }
 
     /// export 命令
-    var exportCommand: String {
+    public var exportCommand: String {
         return "export"
     }
 
     /// 描述
-    var description: String {
+    public var description: String {
         switch self {
         case .zsh: return "写入 ~/.zshrc"
         case .bash: return "写入 ~/.bashrc"

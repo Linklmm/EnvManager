@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import os.log
+import EnvManagerCore
 
 private let log = OSLog(subsystem: "com.envmanager", category: "MainViewModel")
 
@@ -109,15 +110,6 @@ class MainViewModel: ObservableObject {
                 // 立即更新过滤后的变量列表
                 self.updateFilteredVariables()
                 print("📋 [MainViewModel] filteredVariables 已更新, 数量: \(self.filteredVariables.count)")
-            }
-            .store(in: &cancellables)
-
-        // 监听分组变化（仅用于响应本地 groups 的 UI 状态变化）
-        // 注意：数据更新已在上面的订阅中处理
-        $groups
-            .sink { [weak self] _ in
-                // 仅在非订阅更新时触发（防止重复更新）
-                // 此订阅主要用于 UI 状态联动
             }
             .store(in: &cancellables)
 

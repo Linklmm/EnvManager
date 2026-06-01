@@ -1,4 +1,5 @@
 import SwiftUI
+import EnvManagerCore
 
 /// 技术图标选择器组件
 struct TechIconPicker: View {
@@ -150,6 +151,8 @@ struct IconCell: View {
                     Text(icon.iconName)
                         .font(.system(size: 20))
                         .frame(width: 28, height: 28)
+                @unknown default:
+                    EmptyView()
                 }
 
                 // 名称标签
@@ -201,6 +204,8 @@ struct TechIconView: View {
                 Text(name)
                     .font(.system(size: size * 0.8))
                     .frame(width: size, height: size)
+            @unknown default:
+                EmptyView()
             }
         } else {
             // 无图标：显示首字母圆形背景

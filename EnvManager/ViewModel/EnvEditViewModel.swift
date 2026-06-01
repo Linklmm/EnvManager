@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import EnvManagerCore
 
 /// 变量编辑 ViewModel
 @MainActor
@@ -76,7 +77,7 @@ class EnvEditViewModel: ObservableObject {
             return (false, "变量名不能包含空格")
         }
         let validCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_"))
-        if !key.unicodeScalars.allSatisfy { validCharacters.contains($0) } {
+        if !key.unicodeScalars.allSatisfy({ validCharacters.contains($0) }) {
             return (false, "变量名只能包含字母、数字和下划线")
         }
         return (true, nil)

@@ -1,46 +1,55 @@
 import SwiftUI
 
 /// 图标类型
-enum IconType {
+public enum IconType {
     case asset      // Assets.xcassets 中的图片
     case sfSymbol   // SF Symbols 系统图标
     case emoji      // 通用 emoji
 }
 
 /// 图标分类
-enum IconCategory {
+public enum IconCategory {
     case language    // 编程语言
     case framework   // 框架/工具
     case general     // 通用图标
 }
 
 /// 技术图标模型
-struct TechIcon: Identifiable, Hashable {
-    let id = UUID()
-    let name: String           // 显示名称：如 "Java"
-    let iconName: String       // Assets 图片名或 SF Symbol 名或 emoji
-    let iconType: IconType     // 图片类型
-    let category: IconCategory // 分类
-    let keywords: [String]     // 搜索关键词
+public struct TechIcon: Identifiable, Hashable {
+    public let id: UUID
+    public let name: String           // 显示名称：如 "Java"
+    public let iconName: String       // Assets 图片名或 SF Symbol 名或 emoji
+    public let iconType: IconType     // 图片类型
+    public let category: IconCategory // 分类
+    public let keywords: [String]     // 搜索关键词
 
-    static func == (lhs: TechIcon, rhs: TechIcon) -> Bool {
+    public init(id: UUID = UUID(), name: String, iconName: String, iconType: IconType, category: IconCategory, keywords: [String]) {
+        self.id = id
+        self.name = name
+        self.iconName = iconName
+        self.iconType = iconType
+        self.category = category
+        self.keywords = keywords
+    }
+
+    public static func == (lhs: TechIcon, rhs: TechIcon) -> Bool {
         lhs.id == rhs.id
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 /// String 扩展 - 检查是否为 emoji
 extension String {
-    var isEmoji: Bool {
+    public var isEmoji: Bool {
         return self.unicodeScalars.first?.properties.isEmoji == true
     }
 }
 
 /// 根据 iconName 推断图标类型
-func getIconType(iconName: String) -> IconType {
+public func getIconType(iconName: String) -> IconType {
     // Assets 图片统一以 "icon-" 前缀命名
     if iconName.hasPrefix("icon-") {
         return .asset
@@ -54,7 +63,7 @@ func getIconType(iconName: String) -> IconType {
 }
 
 /// 所有技术图标列表
-let allTechIcons: [TechIcon] = [
+public let allTechIcons: [TechIcon] = [
     // 编程语言（15个）
     TechIcon(name: "Java", iconName: "icon-java", iconType: .asset, category: .language, keywords: ["java", "jvm", "jdk"]),
     TechIcon(name: "Python", iconName: "icon-python", iconType: .asset, category: .language, keywords: ["python", "py"]),
@@ -108,12 +117,12 @@ let allTechIcons: [TechIcon] = [
 ]
 
 /// 按分类获取图标
-func getIconsByCategory(_ category: IconCategory) -> [TechIcon] {
+public func getIconsByCategory(_ category: IconCategory) -> [TechIcon] {
     return allTechIcons.filter { $0.category == category }
 }
 
 /// 搜索图标
-func searchIcons(query: String) -> [TechIcon] {
+public func searchIcons(query: String) -> [TechIcon] {
     if query.isEmpty {
         return allTechIcons
     }
@@ -125,6 +134,6 @@ func searchIcons(query: String) -> [TechIcon] {
 }
 
 /// 根据 iconName 获取 TechIcon
-func getTechIcon(byIconName: String) -> TechIcon? {
+public func getTechIcon(byIconName: String) -> TechIcon? {
     return allTechIcons.first { $0.iconName == byIconName }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 /// 环境变量的来源类型
-enum EnvSource: String, Codable, CaseIterable {
+public enum EnvSource: String, Codable, CaseIterable {
     /// 手动添加
     case manual
     /// Shell 配置文件 (.zshrc, .bashrc 等)
@@ -12,7 +12,7 @@ enum EnvSource: String, Codable, CaseIterable {
     case application
 
     /// 获取来源的显示名称
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .manual:
             return "手动添加"
@@ -26,7 +26,7 @@ enum EnvSource: String, Codable, CaseIterable {
     }
 
     /// 获取来源的图标
-    var icon: String {
+    public var icon: String {
         switch self {
         case .manual:
             return "pencil"
@@ -40,7 +40,7 @@ enum EnvSource: String, Codable, CaseIterable {
     }
 
     /// 获取来源的 emoji 图标
-    var iconEmoji: String {
+    public var iconEmoji: String {
         switch self {
         case .manual:
             return "✏️"

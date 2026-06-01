@@ -1,16 +1,16 @@
 import Foundation
 
 /// 操作历史记录
-struct HistoryRecord: Identifiable, Codable {
-    let id: UUID
-    var action: ActionType
-    var variableKey: String
-    var oldValue: String?
-    var newValue: String?
-    let timestamp: Date
+public struct HistoryRecord: Identifiable, Codable {
+    public let id: UUID
+    public var action: ActionType
+    public var variableKey: String
+    public var oldValue: String?
+    public var newValue: String?
+    public let timestamp: Date
 
     /// 创建历史记录
-    init(
+    public init(
         id: UUID = UUID(),
         action: ActionType,
         variableKey: String,
@@ -27,7 +27,7 @@ struct HistoryRecord: Identifiable, Codable {
     }
 
     /// 获取记录描述
-    var description: String {
+    public var description: String {
         let actionName = action.displayName
         switch action {
         case .create:
@@ -42,7 +42,7 @@ struct HistoryRecord: Identifiable, Codable {
     }
 
     /// 是否可以回滚此操作
-    var canRollback: Bool {
+    public var canRollback: Bool {
         switch action {
         case .create:
             return true  // 可以删除
@@ -56,7 +56,7 @@ struct HistoryRecord: Identifiable, Codable {
     }
 
     /// 创建回滚记录
-    func createRollback() -> HistoryRecord {
+    public func createRollback() -> HistoryRecord {
         switch action {
         case .create:
             return HistoryRecord(

@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import os.log
+import EnvManagerCore
 
 private let log = OSLog(subsystem: "com.envmanager", category: "MenuBarViewModel")
 

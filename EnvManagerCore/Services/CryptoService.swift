@@ -2,14 +2,14 @@ import Foundation
 import CryptoKit
 
 /// 加密错误
-enum CryptoError: Error, LocalizedError {
+public enum CryptoError: Error, LocalizedError {
     case encodingFailed
     case decodingFailed
     case encryptionFailed
     case decryptionFailed
     case passwordStorageFailed
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .encodingFailed:
             return "字符串编码失败"
@@ -26,11 +26,11 @@ enum CryptoError: Error, LocalizedError {
 }
 
 /// 加密服务 - 使用 AES 加密敏感信息
-actor CryptoService {
+public actor CryptoService {
     private var key: SymmetricKey
 
     /// 初始化加密服务
-    init() {
+    public init() {
         self.key = Self.getOrCreateKey()
     }
 
@@ -67,7 +67,7 @@ actor CryptoService {
     }
 
     /// 加密字符串
-    func encrypt(_ plaintext: String) throws -> String {
+    public func encrypt(_ plaintext: String) throws -> String {
         guard let data = plaintext.data(using: .utf8) else {
             throw CryptoError.encodingFailed
         }
@@ -82,7 +82,7 @@ actor CryptoService {
     }
 
     /// 解密字符串
-    func decrypt(_ ciphertext: String) throws -> String {
+    public func decrypt(_ ciphertext: String) throws -> String {
         guard let data = Data(base64Encoded: ciphertext) else {
             throw CryptoError.decodingFailed
         }
@@ -98,7 +98,7 @@ actor CryptoService {
     }
 
     /// 检查是否已设置密码
-    func isPasswordSet() -> Bool {
+    public func isPasswordSet() -> Bool {
         let query = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: "EnvManagerPassword",
@@ -110,7 +110,7 @@ actor CryptoService {
     }
 
     /// 设置密码
-    func setPassword(_ password: String) throws {
+    public func setPassword(_ password: String) throws {
         let serviceName = "EnvManagerPassword"
 
         let deleteQuery = [
@@ -137,7 +137,7 @@ actor CryptoService {
     }
 
     /// 验证密码
-    func verifyPassword(_ password: String) -> Bool {
+    public func verifyPassword(_ password: String) -> Bool {
         let query = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: "EnvManagerPassword",

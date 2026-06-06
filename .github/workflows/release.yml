@@ -29,13 +29,27 @@ jobs:
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
 
+    - name: Find app location
+      run: |
+        echo "=== Looking for built app ==="
+        find build -name "*.app" -type d
+        APP_PATH=$(find build -name "EnvManager.app" -type d | head -1)
+        echo "APP_PATH=$APP_PATH"
+        if [ -z "$APP_PATH" ]; then
+          echo "ERROR: EnvManager.app not found!"
+          exit 1
+        fi
+
     - name: Create DMG
       run: |
+        # 查找 app 路径
+        APP_PATH=$(find build -name "EnvManager.app" -type d | head -1)
+
         # 创建临时目录
         mkdir -p dmg_temp
 
         # 复制 app 到临时目录
-        cp -R build/Build/Products/Release/EnvManager.app dmg_temp/
+        cp -R "$APP_PATH" dmg_temp/
 
         # 创建Applications快捷方式
         ln -sf /Applications dmg_temp/Applications
@@ -47,6 +61,9 @@ jobs:
           -ov \
           -format UDZO \
           EnvManager.dmg
+
+        # 验证 DMG 创建成功
+        ls -la EnvManager.dmg
 
     - name: Get version
       id: version

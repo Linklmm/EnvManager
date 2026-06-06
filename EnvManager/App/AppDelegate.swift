@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// 应用代理 - 管理菜单栏和共享服务
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var menuBarController: MenuBarController!
 

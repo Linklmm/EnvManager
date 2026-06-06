@@ -1,0 +1,70 @@
+name: Build and Release DMG
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送 v 开头的 tag 时触发，如 v1.0.0
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Build app
+      run: |
+        xcodebuild build \
+          -project EnvManager.xcodeproj \
+          -scheme EnvManager \
+          -configuration Release \
+          -derivedDataPath build \
+          CODE_SIGN_IDENTITY="-" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Create DMG
+      run: |
+        # 创建临时目录
+        mkdir -p dmg_temp
+
+        # 复制 app 到临时目录
+        cp -R build/Build/Products/Release/EnvManager.app dmg_temp/
+
+        # 创建Applications快捷方式
+        ln -sf /Applications dmg_temp/Applications
+
+        # 创建 DMG
+        hdiutil create \
+          -volname "EnvManager" \
+          -srcfolder dmg_temp \
+          -ov \
+          -format UDZO \
+          EnvManager.dmg
+
+    - name: Get version
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: EnvManager ${{ steps.version.outputs.VERSION }}
+        body: |
+          ## EnvManager ${{ steps.version.outputs.VERSION }}
+
+          ### 下载安装
+          1. 下载 `EnvManager.dmg`
+          2. 打开 DMG，将 EnvManager 拖到 Applications 文件夹
+          3. 首次打开：右键点击应用 → 打开 → 打开
+
+          > 由于未签名，macOS 可能提示"无法验证开发者"。右键打开即可信任。
+        files: EnvManager.dmg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

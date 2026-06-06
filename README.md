@@ -88,7 +88,24 @@
 
 ## 安装
 
-### 从源码编译
+### 方式一：下载 DMG 安装包（推荐）
+
+从 [GitHub Releases](https://github.com/Linklmm/EnvManager/releases) 下载最新的 DMG 安装包。
+
+```bash
+# 1. 下载 DMG 并安装
+# 打开 DMG，将 EnvManager 拖到 Applications 文件夹
+
+# 2. 重要：移除隔离属性（ macOS 会标记未签名应用为"已损坏"）
+xattr -cr /Applications/EnvManager.app
+
+# 3. 打开应用
+open /Applications/EnvManager.app
+```
+
+> **注意**：由于应用未签名，macOS Gatekeeper 会阻止运行。使用 `xattr -cr` 命令移除隔离属性后即可正常使用。
+
+### 方式二：从源码编译
 
 ```bash
 # 克隆仓库
@@ -101,8 +118,6 @@ open EnvManager.xcodeproj
 # 或使用命令行编译
 xcodebuild build -scheme EnvManager -configuration Release
 ```
-
-### 直接使用
 
 编译完成后，应用会出现在 `build/Release/` 目录中，双击即可运行。
 

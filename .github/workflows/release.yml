@@ -81,9 +81,13 @@ jobs:
           ### 下载安装
           1. 下载 `EnvManager.dmg`
           2. 打开 DMG，将 EnvManager 拖到 Applications 文件夹
-          3. 首次打开：右键点击应用 → 打开 → 打开
+          3. **重要**：打开终端，运行以下命令移除隔离属性：
+             ```
+             xattr -cr /Applications/EnvManager.app
+             ```
+          4. 然后正常打开应用
 
-          > 由于未签名，macOS 可能提示"无法验证开发者"。右键打开即可信任。
+          > 由于未签名，macOS 会标记应用为"已损坏"。上述命令可移除隔离属性，使应用正常运行。
         files: EnvManager.dmg
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

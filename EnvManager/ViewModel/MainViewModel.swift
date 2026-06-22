@@ -137,8 +137,8 @@ class MainViewModel: ObservableObject {
         isLoading = true
 
         do {
-            let group = try await envService.createGroup(name: name, icon: icon, color: color)
-            groups.append(group)
+            _ = try await envService.createGroup(name: name, icon: icon, color: color)
+            // groups 会通过 envService.$config 订阅自动同步，无需手动 append
         } catch {
             errorMessage = "创建分组失败: \(error.localizedDescription)"
         }

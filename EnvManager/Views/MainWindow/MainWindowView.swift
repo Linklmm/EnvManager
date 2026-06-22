@@ -67,6 +67,8 @@ struct GroupListView: View {
     @ObservedObject var viewModel: MainViewModel
     let onEditGroup: (EnvGroup) -> Void
 
+    @State private var groupToDelete: EnvGroup?
+
     var body: some View {
         VStack(spacing: 0) {
             // 工具栏
@@ -127,6 +129,9 @@ struct GroupListView: View {
                             },
                             onIconChange: { newIcon in
                                 Task { await viewModel.updateGroupIcon(group.id, icon: newIcon) }
+                            },
+                            onDelete: {
+                                groupToDelete = group
                             }
                         )
                     }
@@ -197,6 +202,30 @@ struct GroupListView: View {
                 }
             }
         )
+        .alert("删除分组", isPresented: Binding(
+            get: { groupToDelete != nil },
+            set: { if !$0 { groupToDelete = nil } }
+        )) {
+            Button("取消", role: .cancel) {
+                groupToDelete = nil
+            }
+            Button("删除", role: .destructive) {
+                if let group = groupToDelete {
+                    Task {
+                        await viewModel.deleteGroup(id: group.id)
+                        groupToDelete = nil
+                    }
+                }
+            }
+        } message: {
+            if let group = groupToDelete {
+                if group.isActive {
+                    Text("分组「\(group.name)」当前已激活，删除后将清除对应的环境变量配置。此操作不可撤销。")
+                } else {
+                    Text("确定要删除分组「\(group.name)」吗？此操作不可撤销。")
+                }
+            }
+        }
     }
 }
 
@@ -211,6 +240,7 @@ struct GroupDetailView: View {
     @State private var editingVariable: EnvVariable?
     @State private var showIconPicker = false
     @State private var previewExpanded = false
+    @State private var showDeleteConfirmation = false
 
     // 用于刷新 group 数据（因为 group 是 let，需要从 viewModel 获取最新数据）
     var currentGroup: EnvGroup {
@@ -391,6 +421,18 @@ struct GroupDetailView: View {
                     .buttonStyle(.borderedProminent)
                 }
 
+                // 删除按钮
+                Button(action: {
+                    showDeleteConfirmation = true
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "trash")
+                        Text("删除分组")
+                    }
+                    .foregroundColor(.red)
+                }
+                .buttonStyle(.bordered)
+
                 Spacer()
 
                 Button("返回") {
@@ -433,6 +475,21 @@ struct GroupDetailView: View {
                     }
                 }
             )
+        }
+        .alert("删除分组", isPresented: $showDeleteConfirmation) {
+            Button("取消", role: .cancel) { }
+            Button("删除", role: .destructive) {
+                Task {
+                    await viewModel.deleteGroup(id: group.id)
+                    onBack()
+                }
+            }
+        } message: {
+            if currentGroup.isActive {
+                Text("分组「\(currentGroup.name)」当前已激活，删除后将清除对应的环境变量配置。此操作不可撤销。")
+            } else {
+                Text("确定要删除分组「\(currentGroup.name)」吗？此操作不可撤销。")
+            }
         }
     }
 }
@@ -620,6 +677,7 @@ struct GroupListRow: View {
     let onDeactivate: () -> Void
     let onEdit: () -> Void
     let onIconChange: (String?) -> Void
+    let onDelete: () -> Void
 
     @State private var showIconPicker = false
 
@@ -688,6 +746,15 @@ struct GroupListRow: View {
             }
             .buttonStyle(.plain)
             .help("编辑分组")
+
+            // 删除按钮
+            Button(action: onDelete) {
+                Image(systemName: "trash")
+                    .font(.system(size: 14))
+                    .foregroundColor(.red.opacity(0.7))
+            }
+            .buttonStyle(.plain)
+            .help("删除分组")
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
